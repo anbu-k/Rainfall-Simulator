@@ -8,6 +8,9 @@ I compile by doing:
 To clean:
 1. make clean (this will also remove the out.gif file)
 
+I compile by doing: 
+1. make 
+2. ./stat < testdata.txt
 
 My program reads point cloud data in a x,y, height format. It then calculates and displays the minimum height and its coordinates, the maximum height and its coordinates and the average height of all the point cloud data.
 
