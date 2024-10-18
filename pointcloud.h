@@ -1,9 +1,11 @@
 // @author Anbu Krishnan - anbu@iastate.edu
-#ifndef POINTCLOUD_H  // header guard
+#ifndef POINTCLOUD_H  
 #define POINTCLOUD_H
-/**
- * stat1 function declaration
- */
-void stat1();
 
-#endif // end of the guard
+#include "util.h"
+
+// Function prototypes for point cloud handling
+void readPointCloudData(FILE* stream, int *rasterWidth, List* pc);
+void imagePointCloud(List* l, int width, char* filename);
+
+#endif 

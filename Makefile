@@ -1,11 +1,17 @@
-# ./stat 
-stat: pointcloud.o
-	gcc pointcloud.o -o stat   
+display: display.o pointcloud.o util.o bmp.o
+	gcc -g -o display display.o pointcloud.o util.o bmp.o
 
-# Builds pointcloud.o
-pointcloud.o: pointcloud.c pointcloud.h
-	gcc -c pointcloud.c        
+display.o: display.c pointcloud.h util.h
+	gcc -g -c display.c
 
-# Make clean 
+pointcloud.o: pointcloud.c pointcloud.h util.h bmp.h
+	gcc -g -c pointcloud.c
+
+util.o: util.c util.h
+	gcc -g -c util.c
+
+bmp.o: bmp.c bmp.h
+	gcc -g -c bmp.c
+
 clean:
-	rm -f *.o stat             
+	rm -f *.o display out.gif

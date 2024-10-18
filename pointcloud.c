@@ -1,50 +1,81 @@
 // @author Anbu Krishnan - anbu@iastate.edu
 #include <stdio.h>
+#include <stdlib.h>
 #include <float.h>
+#include "util.h"
+#include "bmp.h"
+#include "pointcloud.h"
+
 /**
- * stat1 reads point cloud data in the form of x,y,height, 
- * it then finds the min and max heights and their coordinates, and then calculates the average height
+ * Reads point cloud data from a file stream and stores it in a list.
+ * It also returns the raster width which is the number of columns by the pointer.
+ *
+ * @param stream The file stream to read from 
+ * @param rasterWidth A pointer to store the number of columns in the point cloud
+ * @param pc A pointer to the List where the point cloud data will be stored
  */
-void stat1() {
-    double x; // x point
-    double y; // y point
-    double height; // the height
-    double minHeight = DBL_MAX; // the biggest possible value for the minHeight
-    double maxHeight = -DBL_MAX; // the smallest possible value for the maxHeight
-    double minX; // minHeight coordinate x
-    double minY; // minHeight coordinate y 
-    double maxX; // maxHeight coordinate x
-    double maxY; // maxHeight coordinate y
-    double totalHeight = 0.0; // sum of all heights
-    int count = 0; // counter for processed points
+void readPointCloudData(FILE* stream, int *rasterWidth, List* pc) {
+    fscanf(stream, "%d", rasterWidth); // reads the # of columns
 
-    // Keeps reading data in the form (x,y, height) until the of the file, (stream of tuples is terminated by the end of file)
-    while (scanf("%lf %lf %lf", &x, &y, &height) != EOF) {  
-        // Updates the minHeight and stores the coordinates if the current height is smaller
-        if (height < minHeight) {
-            minHeight = height;
-            minX = x;
-            minY = y;
+    // Reads the point cloud data until the end of the file
+    while (!feof(stream)) {
+        pcd_t point;
+        if (fscanf(stream, "%lf %lf %lf", &point.x, &point.y, &point.z) == 3) {
+            point.water = 0.0; 
+            point.north = point.south = point.east = point.west = NULL; // Initializes the neighbor pointers
+            listAddEnd(pc, &point); // Adds the point to the dynamic list
         }
-        // Updates the maxHeight and stores the coordinates if the current height is larger
-        if (height > maxHeight) {
-            maxHeight = height;
-            maxX = x;
-            maxY = y;
-        }
-        totalHeight += height; // calcualtes the total height in order to find the average height
-        count++; // counter that is used to find the average height
     }
-
-    printf("Min Height: %.2f is at (%.2f, %.2f)\n", minHeight, minX, minY); // min height + coordinates where it occurs
-    printf("Max Height: %.2f is at (%.2f, %.2f)\n", maxHeight, maxX, maxY); // max height + coordinates where it occurs
-    printf("Average Height: %.6f\n", totalHeight / count); // avg height
 }
 
 /**
- * main function, all it does is calls the stat1 function and then exits
+ * Generates an image of the point cloud data in grayscale, saving it as a GIF file.
+ * 
+ * @param l Pointer to the List containing the point cloud data.
+ * @param width The number of columns in the data.
+ * @param filename The name of the file to save the image as (e.g., "out.gif").
  */
-int main() {
-    stat1();
-    return 0;
+void imagePointCloud(List *l, int width, char *filename) {
+    int total_points = l->size;
+    int height = total_points / width;
+    double min_z = DBL_MAX, max_z = -DBL_MAX;
+
+    // z-values (height)
+    for (int i = 0; i < total_points; i++) {
+        pcd_t *point = (pcd_t*)listGet(l, i);
+        if (point->z < min_z) min_z = point->z;
+        if (point->z > max_z) max_z = point->z;
+    }
+
+    // Creates new BMP image
+    Bitmap *image = bm_create(width, height);
+    if (image == NULL) {
+        printf("Error: Failed to create BMP image.\n");
+        return;
+    }
+
+    // Maps the z-values to grayscale pixel values and then assigns them to the image
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+
+            pcd_t *point = (pcd_t*)listGet(l, row * width + col);
+
+            int grayscale_value = (int)((point->z - min_z) / (max_z - min_z) * 255);
+            
+            bm_set(image, col, row, bm_rgb(grayscale_value, grayscale_value, grayscale_value)); // Set the grayscale color
+        }
+    }
+
+    // Print statement before saving the image
+    printf("Saving BMP image to file: %s\n", filename);
+
+    // Save the image to a file
+    if (!bm_save(image, filename)) {
+        printf("Error: Failed to save BMP image to file: %s\n", filename);
+    } else {
+        printf("BMP image successfully saved to: %s\n", filename);
+    }
+
+    // Free the image memory
+    bm_free(image);
 }
