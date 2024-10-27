@@ -1,3 +1,12 @@
+# builds the watershed executable
+all: watershed
+
+watershed: watershed.o pointcloud.o util.o bmp.o
+	gcc -g -o watershed watershed.o pointcloud.o util.o bmp.o
+
+watershed.o: watershed.c pointcloud.h util.h
+	gcc -g -c watershed.c
+
 display: display.o pointcloud.o util.o bmp.o
 	gcc -g -o display display.o pointcloud.o util.o bmp.o
 
@@ -14,4 +23,4 @@ bmp.o: bmp.c bmp.h
 	gcc -g -c bmp.c
 
 clean:
-	rm -f *.o display out.gif
+	rm -f *.o watershed display out.gif *.gif

@@ -1,6 +1,6 @@
 // @author Anbu Krishnan - anbu@iastate.edu
 #include <stdio.h>
-#include <stdlib.h> // For exit()
+#include <stdlib.h> 
 #include "util.h"
 #include "pointcloud.h"
 
