@@ -1,4 +1,4 @@
-Project 1 P1 - Rainfall Flood Simulation (Point Cloud Data)
+Rainfall Flood Simulation (Point Cloud Data)
 
 I compile by doing: 
 1. make (this generates the watershed executable)
@@ -21,15 +21,13 @@ output file is simply <ofilebase>.gif, and is the final output of the simulation
 7. <maxwdepth> gives the max water depth
 8. <seq> is a number indicating that every seq number of steps a new output file is 
 generated with the name <ofilebase><iter step>.gif.  A seq number of 1 would 
-output a new file every step. 
+output a new file every step.
 
-<PARTB>:
 My program reads point cloud data in a x,y, height format. It then calculates and displays the minimum height and its coordinates, the maximum height and its coordinates and the average height of all the point cloud data.
 
 It processes the point cloud data and calculates: the minimum height and its corresponding coordinates, its maximum height and its corresponding coordinates, and the average height of all points in the point cloud.
 
-<PARTC>
-This part simulates a flood model over a terrain using point cloud data. Each step "iter" simulates water flowing from higher elevations to lower ones based on the water flow
+It then simulates a flood model over a terrain using point cloud data. Each step "iter" simulates water flowing from higher elevations to lower ones based on the water flow
 coefficient. The water evaporates based on the evaporation coefficient after each step.
 
 My simulation generates .gif images showing water accumulation at different steps of the simulation, the total number of images depends on the values of iter and seq.
